@@ -1,9 +1,17 @@
+import { useEffect, useState } from "react";
+
 import Card from "@/components/Card";
 import { Container } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import Head from "next/head";
 
 export default function Home() {
+  const [avatars, setAvatars] = useState([]);
+  useEffect(() => {
+    fetch("/api/createAvatar")
+      .then((res) => res.json())
+      .then((data) => setAvatars(data));
+  }, []);
   return (
     <>
       <Head>
@@ -15,9 +23,13 @@ export default function Home() {
       <main style={{ padding: "32px" }}>
         <Container maxWidth="lg">
           <Grid container spacing={3}>
-            {[...Array(10)].map((_, i) => (
-              <Grid xs={12} sm={6} md={3}>
-                <Card />
+            {avatars.map((avatar, i) => (
+              <Grid key={i} xs={12} sm={6} md={4}>
+                <Card
+                  name={avatar.name}
+                  image={avatar.image}
+                  description={avatar.description}
+                />
               </Grid>
             ))}
           </Grid>

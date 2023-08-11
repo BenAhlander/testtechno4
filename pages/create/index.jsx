@@ -1,9 +1,11 @@
-import { Button, Container, Paper, TextField, Typography } from "@mui/material";
+import { Container, Paper, TextField, Typography } from "@mui/material";
 
 import Grid from "@mui/material/Unstable_Grid2";
+import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
 
 export default function Create() {
+  const [isLoading, setIsLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     name: "",
     image: "",
@@ -18,12 +20,19 @@ export default function Create() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
     const response = await fetch("/api/createAvatar", {
       method: "POST",
       body: JSON.stringify(formValues),
     });
     const data = await response.json();
-    console.log(data);
+    setFormValues({
+      name: "",
+      image: "",
+      interests: "",
+      description: "",
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -35,42 +44,46 @@ export default function Create() {
           </Grid>
           <Grid item xs={12}>
             <TextField
+              name="name"
               fullWidth
               id="outlined-basic"
               label="Name"
               variant="outlined"
+              onChange={handleChange}
+              value={formValues.name}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
+              name="image"
               fullWidth
               id="outlined-basic"
               label="Image"
               variant="outlined"
+              onChange={handleChange}
+              value={formValues.image}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
+              name="interests"
               fullWidth
               id="outlined-basic"
               label="Interests"
               variant="outlined"
+              onChange={handleChange}
+              value={formValues.interests}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              id="outlined-basic"
+            <LoadingButton
+              loading={isLoading}
               fullWidth
-              label="Description"
-              multiline
-              rows={3}
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button fullWidth variant="contained" onClick={handleSubmit}>
+              variant="contained"
+              onClick={handleSubmit}
+            >
               Create
-            </Button>
+            </LoadingButton>
           </Grid>
         </Grid>
       </Paper>
