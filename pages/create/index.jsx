@@ -1,4 +1,5 @@
 import { Container, Paper, TextField, Typography } from "@mui/material";
+import Card from "@/components/Card";
 
 import Grid from "@mui/material/Unstable_Grid2";
 import { LoadingButton } from "@mui/lab";
@@ -6,33 +7,45 @@ import { useState } from "react";
 
 export default function Create() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formValues, setFormValues] = useState({
     name: "",
-    image: "",
-    interests: "",
     description: "",
   });
+  const [activeAvatar, setActiveAvatar] = useState(null);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
+  const generateImage = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-    const response = await fetch("/api/createAvatar", {
+    const response = await fetch("/api/generateAvatar", {
       method: "POST",
       body: JSON.stringify(formValues),
     });
     const data = await response.json();
+    setActiveAvatar(data);
+    setIsLoading(false);
+  };
+
+  const saveAvatar = async (event) => {
+    event.preventDefault();
+    setIsSaving(true);
+    const response = await fetch("/api/createAvatar", {
+      method: "POST",
+      body: JSON.stringify(activeAvatar),
+    });
+    const data = await response.json();
+    console.log(data);
+    setActiveAvatar(null);
     setFormValues({
       name: "",
-      image: "",
-      interests: "",
       description: "",
     });
-    setIsLoading(false);
+    setIsSaving(false);
   };
 
   return (
@@ -46,7 +59,6 @@ export default function Create() {
             <TextField
               name="name"
               fullWidth
-              id="outlined-basic"
               label="Name"
               variant="outlined"
               onChange={handleChange}
@@ -55,36 +67,56 @@ export default function Create() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              name="image"
+              name="description"
               fullWidth
-              id="outlined-basic"
-              label="Image"
+              label="description"
               variant="outlined"
               onChange={handleChange}
-              value={formValues.image}
+              value={formValues.description}
             />
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              name="interests"
-              fullWidth
-              id="outlined-basic"
-              label="Interests"
-              variant="outlined"
-              onChange={handleChange}
-              value={formValues.interests}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <LoadingButton
-              loading={isLoading}
-              fullWidth
-              variant="contained"
-              onClick={handleSubmit}
-            >
-              Create
-            </LoadingButton>
-          </Grid>
+          {!activeAvatar ? (
+            <Grid item xs={12}>
+              <LoadingButton
+                loading={isLoading}
+                fullWidth
+                variant="contained"
+                onClick={generateImage}
+              >
+                Generate Image
+              </LoadingButton>
+            </Grid>
+          ) : (
+            <>
+              <Grid item xs={6}>
+                <LoadingButton
+                  loading={isLoading}
+                  fullWidth
+                  variant="contained"
+                  onClick={generateImage}
+                >
+                  Try Again
+                </LoadingButton>
+              </Grid>
+              <Grid item xs={6}>
+                <LoadingButton
+                  loading={isSaving}
+                  fullWidth
+                  variant="contained"
+                  onClick={saveAvatar}
+                >
+                  Save
+                </LoadingButton>
+              </Grid>
+              <Grid item xs={12}>
+                <Card
+                  name={activeAvatar.name}
+                  image={activeAvatar.image_url}
+                  description={activeAvatar.description}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
       </Paper>
     </Container>

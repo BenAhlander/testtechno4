@@ -9,15 +9,16 @@ export default async function handler(req, res) {
   const openai = new OpenAIApi(configuration);
 
   switch (req.method) {
-    case "GET":
-      const { rows: getRows } = await sql`SELECT * FROM avatars;`;
-      res.status(200).json(getRows);
-      break;
     case "POST":
       try {
-        const { name, description, image_url } = JSON.parse(req.body);
+        const { name, description } = JSON.parse(req.body);
         try {
-          await sql`INSERT INTO avatars (name, image, description) VALUES (${name}, ${image_url}, ${description});`;
+          const response = await openai.createImage({
+            prompt: description,
+            n: 1,
+            size: "512x512",
+          });
+          const image_url = response.data.data[0].url;
           res.status(200).json({ name, image_url, description });
         } catch (error) {
           console.error(error);
