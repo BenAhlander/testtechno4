@@ -23,7 +23,7 @@ export default function Create() {
     description: "",
   });
   const [activeAvatar, setActiveAvatar] = useState(null);
-  const [showSuccessAlert, setShowSuccessAlert] = useState(true);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   const router = useRouter();
 
