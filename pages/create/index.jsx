@@ -1,9 +1,19 @@
-import { Container, Paper, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Container,
+  Paper,
+  TextField,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import Card from "@/components/Card";
+import CloseIcon from "@mui/icons-material/Close";
 
 import Grid from "@mui/material/Unstable_Grid2";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Create() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +23,9 @@ export default function Create() {
     description: "",
   });
   const [activeAvatar, setActiveAvatar] = useState(null);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(true);
+
+  const router = useRouter();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -46,6 +59,7 @@ export default function Create() {
       description: "",
     });
     setIsSaving(false);
+    setShowSuccessAlert(true);
   };
 
   return (
@@ -63,16 +77,20 @@ export default function Create() {
               variant="outlined"
               onChange={handleChange}
               value={formValues.name}
+              placeholder="Bob"
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
-              name="description"
               fullWidth
               label="description"
-              variant="outlined"
+              multiline
+              name="description"
               onChange={handleChange}
+              placeholder="A giraffe with a jet pack"
+              rows={4}
               value={formValues.description}
+              variant="outlined"
             />
           </Grid>
           {!activeAvatar ? (
@@ -116,6 +134,34 @@ export default function Create() {
                 />
               </Grid>
             </>
+          )}
+          {showSuccessAlert && (
+            <Grid item xs={12}>
+              <Alert
+                onClose={() => {
+                  setShowSuccessAlert(false);
+                }}
+                action={
+                  <>
+                    <Button
+                      color="inherit"
+                      size="small"
+                      onClick={() => router.push("/")}
+                    >
+                      Check It Out
+                    </Button>
+                    <IconButton
+                      size="small"
+                      onClick={() => setShowSuccessAlert(false)}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </>
+                }
+              >
+                Your Avatar Has Been Added To the Board!
+              </Alert>
+            </Grid>
           )}
         </Grid>
       </Paper>

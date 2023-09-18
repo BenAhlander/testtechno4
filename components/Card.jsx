@@ -7,8 +7,8 @@ import Typography from "@mui/material/Typography";
 
 export default function MediaCard({ name, image, description }) {
   return (
-    <Card>
-      <CardMedia sx={{ height: 300 }} image={image} title={name} />
+    <Card sx={{ height: "100%" }}>
+      <CardMedia sx={{ aspectRatio: "1 / 1" }} image={image} title={name} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {name}
