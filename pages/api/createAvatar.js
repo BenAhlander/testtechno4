@@ -11,7 +11,8 @@ export default async function handler(req, res) {
   switch (req.method) {
     case "GET":
       const { rows: getRows } = await sql`SELECT * FROM avatars;`;
-      res.status(200).json(getRows);
+      const sortedRows = getRows.reverse();
+      res.status(200).json(sortedRows);
       break;
     case "POST":
       try {
